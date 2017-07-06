@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -o errexit -o nounset
+
+GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
+
+. "${GIT_ROOT}/.envrc"
+
+# TODO: We currently skip memory limits for development purposes
+
+cd "$GIT_ROOT"
+
+fissile build kube \
+    --kube-output-dir="${GIT_ROOT}/kube" \
+    --defaults-file="$(echo env/*.env | tr ' ' ',')" \
+    --use-memory-limits=false
