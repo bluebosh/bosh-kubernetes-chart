@@ -1,6 +1,6 @@
 ---
-apiVersion: apps/v1beta1
-kind: StatefulSet
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
@@ -8,7 +8,10 @@ metadata:
   name: bosh
 spec:
   replicas: 1
-  serviceName: bosh-pod
+  selector:
+    matchLabels:
+      skiff-role-name: bosh
+  strategy: {}
   template:
     metadata:
       creationTimestamp: null
@@ -104,7 +107,7 @@ spec:
         resources: {}
         volumeMounts:
         - mountPath: /var/vcap/store
-          name: disk-eb97d5f7-85d5-4537-651f-ec74b8cf383d
+          name: nfsvol
         - mountPath: /var/vcap/jobs/kubernetes_cpi/kube
           name: config-volume
       volumes:
@@ -114,24 +117,11 @@ spec:
             items:
             - key: cpi-properties
               path: cpi.json
+        - name: nfsvol
+          persistentVolumeClaim:
+            claimName: {{ template "fullname" . }}
       dnsPolicy: ClusterFirst
       restartPolicy: Always
-  volumeClaimTemplates:
-  - metadata:
-      annotations:
-        "volume.beta.kubernetes.io/storage-class":       "ibmc-file-gold"
-        "volume.beta.kubernetes.io/storage-provisioner": "ibm.io/ibmc-file"
-      creationTimestamp: null
-      name: disk-eb97d5f7-85d5-4537-651f-ec74b8cf383d
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      resources:
-        requests:
-          storage: 20G
-    status: {}
-status:
-  replicas: 0
 ---
 apiVersion: v1
 items:
