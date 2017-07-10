@@ -1,1 +1,1 @@
-Welcome to Dockerized BOSH!
+Welcome to Containerized BOSH!

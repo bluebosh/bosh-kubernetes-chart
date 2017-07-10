@@ -104,7 +104,7 @@ spec:
         resources: {}
         volumeMounts:
         - mountPath: /var/vcap/store
-          name: nfsvol
+          name: disk-eb97d5f7-85d5-4537-651f-ec74b8cf383d
         - mountPath: /var/vcap/jobs/kubernetes_cpi/kube
           name: config-volume
       volumes:
@@ -114,11 +114,24 @@ spec:
             items:
             - key: cpi-properties
               path: cpi.json
-        - name: nfsvol
-          persistentVolumeClaim:
-            claimName: {{ template "fullname" . }}
       dnsPolicy: ClusterFirst
       restartPolicy: Always
+  volumeClaimTemplates:
+  - metadata:
+      annotations:
+        "volume.beta.kubernetes.io/storage-class":       "ibmc-file-gold"
+        "volume.beta.kubernetes.io/storage-provisioner": "ibm.io/ibmc-file"
+      creationTimestamp: null
+      name: disk-eb97d5f7-85d5-4537-651f-ec74b8cf383d
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20G
+    status: {}
+status:
+  replicas: 0
 ---
 apiVersion: v1
 items:
@@ -176,35 +189,35 @@ items:
     - name: director
       port: 25555
       protocol: TCP
-      targetPort: 25555
+      targetPort: 0
     - name: directorbackend
       port: 25556
       protocol: TCP
-      targetPort: 25556
+      targetPort: 0
     - name: blobstore
       port: 25250
       protocol: TCP
-      targetPort: 25250
+      targetPort: 0
     - name: nats
       port: 4222
       protocol: TCP
-      targetPort: 4222
+      targetPort: 0
     - name: powerdns
       port: 8081
       protocol: TCP
-      targetPort: 8081
+      targetPort: 0
     - name: postgres
       port: 5432
       protocol: TCP
-      targetPort: 5432
+      targetPort: 0
     - name: dns-tcp
       port: 53
       protocol: TCP
-      targetPort: 53
+      targetPort: 0
     - name: dns-udp
       port: 53
       protocol: UDP
-      targetPort: 53
+      targetPort: 0
     selector:
       skiff-role-name: bosh
     type: ClusterIP
